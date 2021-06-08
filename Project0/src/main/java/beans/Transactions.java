@@ -2,77 +2,113 @@ package beans;
 
 public class Transactions {
 
-	private int transaction_id;
-	private int recipient_id;
-	private int sender_id;
-	private String senderFirstName;
-	private String senderLastName;
-	private String recipientUserName;
-	private String sender_acc_number;
-	private double transaction_amount;
+	private Integer id;
+	private Account source;
+	private String type;
+	private Float amount;
+	private Account receiver;
 	
-	public int getTransaction_id() {
-		return transaction_id;
+	public Transactions() {}
+	
+	public Transactions(Account source, String type, Float amount) {
+		this.source = source;
+		this.type = type;
+		this.amount = amount;
 	}
 	
-	public void setTransaction_id(int transaction_id) {
-		this.transaction_id = transaction_id;
+	public Transactions(Account source, String type, Float amount, Account receiver) {
+		this.source = source;
+		this.type = type;
+		this.amount = amount;
+		this.receiver = receiver;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Account getSource() {
+		return source;
+	}
+
+	public void setSource(Account source) {
+		this.source = source;
 	}
 	
-	public int getRecipient_id() {
-		return recipient_id;
+	public Account getReceiver() {
+		return this.receiver;
 	}
 	
-	public void setRecipient_id(int recipient_id) {
-		this.recipient_id = recipient_id;
+	public void setReceiver(Account receiver) {
+		this.receiver = receiver;
 	}
-	
-	public int getSender_id() {
-		return sender_id;
+
+	public String getType() {
+		return type;
 	}
-	
-	public void setSender_id(int sender_id) {
-		this.sender_id = sender_id;
+
+	public void setType(String type) {
+		this.type = type;
 	}
-	
-	public String getSenderFirstName() {
-		return senderFirstName;
+
+	public Float getAmount() {
+		return amount;
 	}
-	
-	public void setSenderFirstName(String senderFirstName) {
-		this.senderFirstName = senderFirstName;
+
+	public void setAmount(Float amount) {
+		this.amount = amount;
 	}
-	
-	public String getSenderLastName() {
-		return senderLastName;
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((receiver == null) ? 0 : receiver.hashCode());
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
 	}
-	
-	public void setSenderLastName(String senderLastName) {
-		this.senderLastName = senderLastName;
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		
+		Transactions other = (Transactions) obj;
+		if (amount == null) {
+			if (other.amount != null) return false;
+		} else if (!amount.equals(other.amount)) return false;
+		
+		if (id == null) {
+			if (other.id != null) return false;
+		} else if (!id.equals(other.id)) return false;
+		
+		if (receiver == null) {
+			if (other.receiver != null) return false;
+		} else if (!receiver.equals(other.receiver)) return false;
+		
+		if (source == null) {
+			if (other.source != null) return false;
+		} else if (!source.equals(other.source)) return false;
+		
+		if (type == null) {
+			if (other.type != null) return false;
+		} else if (!type.equals(other.type)) return false;
+		
+		return true;
 	}
-	
-	public String getRecipientUserName() {
-		return recipientUserName;
+
+	@Override
+	public String toString() {
+		return "Transaction [id=" + id + ", source=" + source + ", type=" + type + ", amount=" + amount + ", receiver=" + receiver + "]";
 	}
-	
-	public void setRecipientUserName(String recipientUserName) {
-		this.recipientUserName = recipientUserName;
-	}
-	
-	public String getSender_acc_number() {
-		return sender_acc_number;
-	}
-	
-	public void setSender_acc_number(String sender_acc_number) {
-		this.sender_acc_number = sender_acc_number;
-	}
-	
-	public double getTransaction_amount() {
-		return transaction_amount;
-	}
-	
-	public void setTransaction_amount(double transaction_amount) {
-		this.transaction_amount = transaction_amount;
-	}
+
 	
 }
