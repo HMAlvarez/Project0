@@ -59,7 +59,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 				c.setId(rs.getInt("id"));
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
-				c.setEmployee(rs.getBoolean("employee"));
+				c.setEmployee(rs.getBoolean("employee_check"));
 				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				return c;
 			}
@@ -82,7 +82,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 				c.setId(rs.getInt("id"));
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
-				c.setEmployee(rs.getBoolean("employee"));
+				c.setEmployee(rs.getBoolean("employee_check"));
 				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				return c;
 			}
@@ -95,7 +95,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 
 	public List<Customer> getEmployees() {
 		List<Customer> list = new ArrayList<Customer>();
-		String sql = "select * from customers where employee = true;";
+		String sql = "select * from customers where employee_check = true;";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -104,7 +104,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 				c.setId(rs.getInt("id"));
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
-				c.setEmployee(rs.getBoolean("employee"));
+				c.setEmployee(rs.getBoolean("employee_check"));
 				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				list.add(c);
 			}
@@ -130,7 +130,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 				c.setId(rs.getInt("id"));
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
-				c.setEmployee(rs.getBoolean("employee"));
+				c.setEmployee(rs.getBoolean("employee_check"));
 				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				map.put(c.getId(), c);
 			}
@@ -146,7 +146,7 @@ public class CustomerDAO implements GenericRepository<Customer> {
 	@Override
 	public boolean update(Customer c) {
 		// TODO: do we need to update the Accounts table?
-		String sql = "update customers set username = ?, password = ?, employee = ? returning *;";
+		String sql = "update customers set username = ?, password = ?, employee_check = ? returning *;";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, c.getUsername());

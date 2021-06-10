@@ -63,12 +63,12 @@ public class TransactionDAO implements GenericRepository<Transactions> {
 			if (rs.next()) {
 				Transactions t = new Transactions();
 				t.setId(rs.getInt("id"));
-				t.setSource(AccountDAO.getInstance().getById(rs.getInt("source")));
+				t.setSource(AccountDAO.getInstance().getById(rs.getInt("send_from")));
 				t.setType(rs.getString("type"));
 				t.setAmount(rs.getFloat("amount"));
 
 				if (t.getType().equalsIgnoreCase("transfer")) {
-					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("receiver")));
+					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("send_to")));
 				}
 			}
 		} catch (SQLException e) {
@@ -89,12 +89,12 @@ public class TransactionDAO implements GenericRepository<Transactions> {
 			while (rs.next()) {
 				Transactions t = new Transactions();
 				t.setId(rs.getInt("id"));
-				t.setSource(AccountDAO.getInstance().getById(rs.getInt("source")));
+				t.setSource(AccountDAO.getInstance().getById(rs.getInt("send_from")));
 				t.setType(rs.getString("type"));
 				t.setAmount(rs.getFloat("amount"));
 
 				if (t.getType().equalsIgnoreCase("transfer")) {
-					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("receiver")));
+					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("send_to")));
 				}
 
 				map.put(t.getId(), t);
