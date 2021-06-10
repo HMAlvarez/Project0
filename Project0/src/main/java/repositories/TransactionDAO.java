@@ -11,18 +11,18 @@ import java.util.Map;
 import models.Transactions;
 import utilities.JDBC;
 
-public class TransactionsRepository implements GenericRepository<Transactions> {
+public class TransactionDAO implements GenericRepository<Transactions> {
 
-	private static TransactionsRepository instance;
+	private static TransactionDAO instance;
 
 	private Connection conn = JDBC.getConnection();
 
-	private TransactionsRepository() {
+	private TransactionDAO() {
 	}
 
-	public static TransactionsRepository getInstance() {
+	public static TransactionDAO getInstance() {
 		if (instance == null)
-			instance = new TransactionsRepository();
+			instance = new TransactionDAO();
 		return instance;
 	}
 
@@ -63,12 +63,12 @@ public class TransactionsRepository implements GenericRepository<Transactions> {
 			if (rs.next()) {
 				Transactions t = new Transactions();
 				t.setId(rs.getInt("id"));
-				t.setSource(AccountRepository.getInstance().getById(rs.getInt("source")));
+				t.setSource(AccountDAO.getInstance().getById(rs.getInt("source")));
 				t.setType(rs.getString("type"));
 				t.setAmount(rs.getFloat("amount"));
 
 				if (t.getType().equalsIgnoreCase("transfer")) {
-					t.setReceiver(AccountRepository.getInstance().getById(rs.getInt("receiver")));
+					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("receiver")));
 				}
 			}
 		} catch (SQLException e) {
@@ -89,12 +89,12 @@ public class TransactionsRepository implements GenericRepository<Transactions> {
 			while (rs.next()) {
 				Transactions t = new Transactions();
 				t.setId(rs.getInt("id"));
-				t.setSource(AccountRepository.getInstance().getById(rs.getInt("source")));
+				t.setSource(AccountDAO.getInstance().getById(rs.getInt("source")));
 				t.setType(rs.getString("type"));
 				t.setAmount(rs.getFloat("amount"));
 
 				if (t.getType().equalsIgnoreCase("transfer")) {
-					t.setReceiver(AccountRepository.getInstance().getById(rs.getInt("receiver")));
+					t.setReceiver(AccountDAO.getInstance().getById(rs.getInt("receiver")));
 				}
 
 				map.put(t.getId(), t);

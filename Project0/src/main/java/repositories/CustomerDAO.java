@@ -12,16 +12,16 @@ import java.util.Map;
 import models.Customer;
 import utilities.JDBC;
 
-public class CustomerRepository implements GenericRepository<Customer> {
-	private static CustomerRepository instance;
+public class CustomerDAO implements GenericRepository<Customer> {
+	private static CustomerDAO instance;
 	private Connection conn = JDBC.getConnection();
 
-	private CustomerRepository() {
+	private CustomerDAO() {
 	}
 
-	public static CustomerRepository getInstance() {
+	public static CustomerDAO getInstance() {
 		if (instance == null)
-			instance = new CustomerRepository();
+			instance = new CustomerDAO();
 		return instance;
 	}
 
@@ -60,7 +60,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
 				c.setEmployee(rs.getBoolean("employee"));
-				c.setAccounts(AccountRepository.getInstance().getAllByCustomerId(c.getId()));
+				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				return c;
 			}
 		} catch (SQLException e) {
@@ -83,7 +83,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
 				c.setEmployee(rs.getBoolean("employee"));
-				c.setAccounts(AccountRepository.getInstance().getAllByCustomerId(c.getId()));
+				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				return c;
 			}
 		} catch (SQLException e) {
@@ -105,7 +105,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
 				c.setEmployee(rs.getBoolean("employee"));
-				c.setAccounts(AccountRepository.getInstance().getAllByCustomerId(c.getId()));
+				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				list.add(c);
 			}
 
@@ -131,7 +131,7 @@ public class CustomerRepository implements GenericRepository<Customer> {
 				c.setUsername(rs.getString("username"));
 				c.setPassword(rs.getString("password"));
 				c.setEmployee(rs.getBoolean("employee"));
-				c.setAccounts(AccountRepository.getInstance().getAllByCustomerId(c.getId()));
+				c.setAccounts(AccountDAO.getInstance().getAllByCustomerId(c.getId()));
 				map.put(c.getId(), c);
 			}
 

@@ -136,7 +136,7 @@ public class Transactions {
 		String source_balance = NumberFormat.getCurrencyInstance().format(this.source.getBalance());
 		String amount_format = NumberFormat.getCurrencyInstance().format(this.amount);
 
-		String str = String.format("Transaction %3d -> (%d) %s: %10s | %-10s of %10s", this.id, source_id,
+		String str = String.format("Transaction %3d -> (%d) %s: %15s | %-10s of %10s", this.id, source_id,
 				source_customer_name, source_balance, this.type, amount_format);
 
 		StringBuilder builder = new StringBuilder(str);

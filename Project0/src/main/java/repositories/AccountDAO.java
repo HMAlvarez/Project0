@@ -12,16 +12,16 @@ import java.util.Map;
 import models.Account;
 import utilities.JDBC;
 
-public class AccountRepository implements GenericRepository<Account> {
-	private static AccountRepository instance;
+public class AccountDAO implements GenericRepository<Account> {
+	private static AccountDAO instance;
 	private Connection conn = JDBC.getConnection();
 
-	private AccountRepository() {
+	private AccountDAO() {
 	}
 
-	public static AccountRepository getInstance() {
+	public static AccountDAO getInstance() {
 		if (instance == null)
-			instance = new AccountRepository();
+			instance = new AccountDAO();
 		return instance;
 	}
 

@@ -3,7 +3,7 @@ package services;
 import java.util.Map;
 
 import models.Transactions;
-import repositories.TransactionsRepository;
+import repositories.TransactionDAO;
 
 public class TransactionsServiceImpl implements TransactionsService {
 	private static TransactionsServiceImpl instance;
@@ -19,11 +19,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 
 	@Override
 	public void add(Transactions t) {
-		TransactionsRepository.getInstance().add(t);
+		TransactionDAO.getInstance().add(t);
 	}
 
 	@Override
 	public Map<Integer, Transactions> getAll() {
-		return TransactionsRepository.getInstance().getAll();
+		return TransactionDAO.getInstance().getAll();
 	}
 }

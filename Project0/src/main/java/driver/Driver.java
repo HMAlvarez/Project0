@@ -2,6 +2,7 @@ package driver;
 
 import java.text.NumberFormat;
 
+
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -13,34 +14,53 @@ import logging.AppLogger;
 import models.Account;
 import models.Customer;
 import models.Transactions;
-import repositories.TransactionsRepository;
 import services.AccountServiceImpl;
 import services.CustomerServiceImpl;
 import services.TransactionsServiceImpl;
 
 public class Driver {
-	/*
-	 * Bugs:
-	 * 
-	 * - "pending" in the DB should be changed to "status", signifiying one of three
-	 * states: pending, approved, or denied - control flow everywhere needs to be
-	 * refined - Printing Transaction Log: make the printed entries have nicer
-	 * formatting
-	 */
+
+	public static void main(String[] args) {
+		
+		scanner = new Scanner(System.in);
+		boolean quit = false;
+		
+		AppLogger.logger.info("Program Started.");
+
+
+		printMessage("Hello!\nThis is a console-based bank application meant to simulate simple banking operations.\n"
+				+ "Please read all menu options and instructions carefully before typing. ");
+		do {
+			switch (currentMenu) {
+			case FIRST_MENU:
+				printMenu(main_menu, "Quit", true);
+				quit = handleMainMenu();
+				break;
+			case SECOND_MENU:
+				printAccounts(CustomerServiceImpl.getInstance().getCustomer());
+				printMenu(customer_menu, "Logout", true, CustomerServiceImpl.getInstance().getCustomer().isEmployee());
+				handleCustomerMenu();
+				break;
+			}
+		} while (!quit);
+
+		scanner.close();
+	}
+	
 	private enum Menus {
-		MAIN, CUSTOMER_MAIN
+		FIRST_MENU, SECOND_MENU
 	}
 
-	private static Menus currentMenu = Menus.MAIN;
+	private static Menus currentMenu = Menus.FIRST_MENU;
 
 	public static final Logger logger = LogManager.getLogger(Driver.class);
 
 	public static Scanner scanner;
-	private static String[] main_menu = { "1. Login", "2. Sign Up" };
-	private static String[] customer_menu = { "1. Apply for a new account", "2. Withdraw money", "3. Deposit money",
-			"4. Transfer money" };
-	private static String[] employee_options = { "Approve or reject an account", "View a customer's accounts",
-			"View transaction log" };
+	private static String[] main_menu = { "1. Sign In", "2. Sign Up" };
+	private static String[] customer_menu = { "1. Make a New Account", "2. Make a Withdrawal", "3. Make a Deposit",
+			"4. Make a Transfer" };
+	private static String[] employee_options = { "Approve or Deny Accounts", "View Customer Account",
+			"View Transaction Logs" };
 
 	public static void printAccounts(Customer customer) {
 		if (customer == null) {
@@ -51,20 +71,20 @@ public class Driver {
 		boolean printingCurrentCustomer = customer.equals(CustomerServiceImpl.getInstance().getCustomer());
 
 		if (printingCurrentCustomer)
-			printMessage("\n\n\nYou are logged in as user \"" + customer.getUsername() + "\"\n");
+			printMessage("\n\nYou are logged in as \"" + customer.getUsername() + "\"\n");
 		else
-			printMessage("\nAccounts for customer \"" + customer.getUsername() + "\":\n");
+			printMessage("\nCustomer Account(s) \"" + customer.getUsername() + "\":\n");
 
 		if (customer.getAccounts() == null || customer.getAccounts().size() == 0) {
 			if (printingCurrentCustomer)
-				printMessage("You do not have any accounts currently open.\n");
+				printMessage("No accounts currently open.\n");
 			else
 				printMessage("Customer \"%s\" does not have any accounts.%n", customer.getUsername());
 		} else {
 			if (printingCurrentCustomer)
 				printMessage("Your accounts:");
 			customer.getAccounts().entrySet().forEach((e) -> {
-				printMessage("    %d: %10s    %s%n", e.getKey(),
+				printMessage("    %d: %15s    %s%n", e.getKey(),
 						NumberFormat.getCurrencyInstance().format(e.getValue().getBalance()),
 						e.getValue().isPending() ? "Pending" : "");
 			});
@@ -72,7 +92,7 @@ public class Driver {
 	}
 
 	private static void printMenu(String[] menu, String extraOption, boolean printCarrot) {
-		printMessage("\nPlease select an option:\n");
+		printMessage("\nPlease select a Menu Option:\n");
 		for (String option : menu)
 			printMessage(option);
 		if (extraOption != null && !extraOption.isEmpty())
@@ -101,7 +121,7 @@ public class Driver {
 	}
 
 	private static void printCarrot() {
-		System.out.print("> ");
+		System.out.print(">> ");
 	}
 
 	public static void printMessage(String message) {
@@ -125,19 +145,12 @@ public class Driver {
 		return confirmation;
 	}
 
-	/**
-	 * Read and process user input for the main menu. It is assumed that the menu
-	 * has already been printed with printMenu().
-	 * 
-	 * @return whether the main do-while loop should terminate ("quit") on the next
-	 *         iteration
-	 */
 	private static boolean handleMainMenu() {
 		String username;
 		switch (scanner.nextInt()) {
-		case 1: // login
+		case 1:
 			if (CustomerServiceImpl.getInstance().login(scanner)) {
-				currentMenu = Menus.CUSTOMER_MAIN;
+				currentMenu = Menus.SECOND_MENU;
 				username = CustomerServiceImpl.getInstance().getCustomer().getUsername();
 				logger.info("Customer " + username + " logged in.");
 				return false;
@@ -145,9 +158,9 @@ public class Driver {
 				printMenu(main_menu, "Quit", true);
 				return false;
 			}
-		case 2: // sign up
+		case 2: 
 			if (CustomerServiceImpl.getInstance().signUp(scanner)) {
-				currentMenu = Menus.CUSTOMER_MAIN;
+				currentMenu = Menus.SECOND_MENU;
 				username = CustomerServiceImpl.getInstance().getCustomer().getUsername();
 				logger.info("Customer " + username + " has signed up.");
 				return false;
@@ -156,22 +169,17 @@ public class Driver {
 				return false;
 			}
 		case 3:
-			printMessage("\nGoodbye!");
+			printMessage("\nProgram Terminated!");
 			return true;
 		default:
-			printMessage("Please enter a valid option.");
+			printMessage("This is not a valid Option. "
+					+ " Please read the menu carefully and try again");
 			return false;
 		}
 	}
 
 	private static void handleCustomerMenu() {
-		/*
-		 * "1. Apply for a new account" "2. Withdraw money" "3. Deposit money"
-		 * "4. Transfer money"
-		 * "5. Logout (if customer only) / Approve or reject an account"
-		 * "6. View a customer's accounts" "7. View transaction log"
-		 * "8. Logout (if employee only)"
-		 */
+		
 		String[] command;
 		Customer customer = CustomerServiceImpl.getInstance().getCustomer();
 		if (customer == null) {
@@ -182,31 +190,26 @@ public class Driver {
 		command = scanner.nextLine().split(" ");
 		switch (command[0]) {
 		case "1":
-			// apply for a new account
 			AccountServiceImpl.getInstance().apply(scanner);
 			break;
 		case "2":
-			// withdraw money
 			AccountServiceImpl.getInstance().withdraw(scanner);
 			break;
 		case "3":
-			// deposit money
 			AccountServiceImpl.getInstance().deposit(scanner);
 			break;
 		case "4":
-			// post money transfer
 			AccountServiceImpl.getInstance().transfer(scanner);
 			break;
 		case "5":
 		case "6":
 		case "7":
 		case "8":
-			// logout (if customer-only or if case "8") / Approve or reject an account
 			if (command[0].equals("8") || (command[0].equals("5") && !customer.isEmployee())) {
 				String username = CustomerServiceImpl.getInstance().getCustomer().getUsername();
 				logger.info("Customer " + username + " logged out.");
 				CustomerServiceImpl.getInstance().logout();
-				currentMenu = Menus.MAIN;
+				currentMenu = Menus.FIRST_MENU;
 				return;
 			} else
 				handleEmployeeOptions(command);
@@ -218,18 +221,13 @@ public class Driver {
 	}
 
 	private static void handleEmployeeOptions(String[] command) {
-		/*
-		 * "5. Approve or reject an account" "6. View a customer's accounts"
-		 * "7. View transaction log"
-		 */
-
+	
 		switch (command[0]) {
 		case "5":
-			// Approve or reject an account
 			List<Account> pending = AccountServiceImpl.getInstance().getPendingAccounts();
 
 			if (pending.isEmpty()) {
-				printMessage("\nThere are no pending accounts.");
+				printMessage("\nThere are accounts that need to be Approved/Denied.");
 				break;
 			}
 
@@ -247,8 +245,7 @@ public class Driver {
 			}
 			break;
 		case "6":
-			// View a customer's accounts
-			printMessage("Choose a Customer to view:");
+			printMessage("Select a Customer to view open Accounts:");
 			CustomerServiceImpl.getInstance().getAllCustomers().entrySet().forEach((e) -> {
 				printMessage("    %d. %s%n", e.getKey(), e.getValue().getUsername());
 			});
@@ -259,9 +256,8 @@ public class Driver {
 			printAccounts(c);
 			break;
 		case "7":
-			// View transaction log
 			Map<Integer, Transactions> transactions = TransactionsServiceImpl.getInstance().getAll();
-			printMessage("\n\n\nTransaction Log:");
+			printMessage("\n\nTransaction Log:");
 			transactions.values().stream().forEach((t) -> printMessage("    " + t.toPrettyString()));
 			break;
 		default:
@@ -269,29 +265,4 @@ public class Driver {
 		}
 	}
 
-	public static void main(String[] args) {
-		scanner = new Scanner(System.in);
-		boolean quit = false;
-		
-		AppLogger.logger.info("Program Started.");
-
-
-		printMessage("Hello\nThis is a console-based bank application meant to simulate simple banking operations\n"
-				+ "Please read all menu options and instructions carefully before typing. ");
-		do {
-			switch (currentMenu) {
-			case MAIN:
-				printMenu(main_menu, "Quit", true);
-				quit = handleMainMenu();
-				break;
-			case CUSTOMER_MAIN:
-				printAccounts(CustomerServiceImpl.getInstance().getCustomer());
-				printMenu(customer_menu, "Logout", true, CustomerServiceImpl.getInstance().getCustomer().isEmployee());
-				handleCustomerMenu();
-				break;
-			}
-		} while (!quit);
-
-		scanner.close();
-	}
 }

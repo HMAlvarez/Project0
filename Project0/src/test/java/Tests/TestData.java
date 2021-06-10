@@ -13,14 +13,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import models.Customer;
-import repositories.CustomerRepository;
+import repositories.CustomerDAO;
 import utilities.JDBC;
 
 public class TestData {
 	
 	private static Savepoint sp;
 	private static Connection conn;
-	private Integer expectedId = 4;
+	private Integer testId = 4;
 	
 	@BeforeClass
 	public static void beforeClass() {
@@ -39,9 +39,9 @@ public class TestData {
 	
 	@Test
 	public void addCustomerTest() {
-		Customer testAgainst = new Customer(expectedId, "test", "test", true);
+		Customer testAgainst = new Customer(testId, "test", "test", true);
 		Customer c = new Customer("test", "test", true);
-		Customer test = CustomerRepository.getInstance().add(c);
+		Customer test = CustomerDAO.getInstance().add(c);
 		Assert.assertEquals(testAgainst, test);
 	}
 	
@@ -50,7 +50,7 @@ public class TestData {
 		try {
 			conn.rollback(sp);
 			conn.setAutoCommit(true);
-			String sql = String.format("alter sequence customers_id_seq restart with %d;", expectedId);
+			String sql = String.format("alter sequence customers_id_seq restart with %d;", testId);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.executeUpdate();
 		} catch (SQLException e) {

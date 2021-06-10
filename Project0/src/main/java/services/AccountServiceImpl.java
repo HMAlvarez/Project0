@@ -6,7 +6,7 @@ import java.util.Scanner;
 import driver.Driver;
 import models.Account;
 import models.Transactions;
-import repositories.AccountRepository;
+import repositories.AccountDAO;
 
 public class AccountServiceImpl implements AccountService {
 
@@ -22,7 +22,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	public List<Account> getPendingAccounts() {
-		return AccountRepository.getInstance().getPendingAccounts();
+		return AccountDAO.getInstance().getPendingAccounts();
 	}
 
 	private static String[] parseWithdrawOrDepositInfo(Scanner scanner, boolean withdraw) {
@@ -40,13 +40,13 @@ public class AccountServiceImpl implements AccountService {
 	private static String[] parseTransferInfo(Scanner scanner) {
 		String[] info = new String[3];
 		Driver.printAccounts(CustomerServiceImpl.getInstance().getCustomer());
-		Driver.printMessage("Please enter the account you wish to transfer from: ", false);
+		Driver.printMessage("\nPlease select the Account to Transfer FROM: ", false);
 		info[0] = scanner.next();
 		scanner.nextLine();
-		Driver.printMessage("Please enter the account you wish to transfer to: ", false);
+		Driver.printMessage("Please select the Account to transfer TO: ", false);
 		info[1] = scanner.next();
 		scanner.nextLine();
-		Driver.printMessage("Amount to transfer: ", false);
+		Driver.printMessage("Transaction amount: ", false);
 		info[2] = scanner.next();
 		scanner.nextLine();
 		return info;
@@ -59,26 +59,26 @@ public class AccountServiceImpl implements AccountService {
 		Float amount = Float.parseFloat(command[1]);
 
 		if (!CustomerServiceImpl.getInstance().getCustomer().getAccounts().containsKey(account_id)) {
-			Driver.printMessage("You are not authorized to withdraw from account %d.%n", account_id);
+			Driver.printMessage("You do not have permission to withdraw from this Account %d.%n", account_id);
 			return false;
 		}
 
-		Account account = AccountRepository.getInstance().getById(account_id);
+		Account account = AccountDAO.getInstance().getById(account_id);
 		if (account != null) {
 			if (amount < 0) {
-				Driver.printMessage("You cannot withdraw a negative amount.");
+				Driver.printMessage("Cannot withdraw a negative amount.");
 				return false;
 			} else if (amount > account.getBalance()) {
-				Driver.printMessage("You cannot withdraw $%.2f from account %d because its balance is only $%.2f.%n",
+				Driver.printMessage("Cannot withdraw $%.2f from account %d because the original balance is only $%.2f.%n",
 						amount, account_id, account.getBalance());
 				return false;
 			} else if (account.isPending()) {
 				Driver.printMessage(
-						"You cannot withdraw money from a pending account. Please wait until an employee approves the account.");
+						"This account is waiting on employee Approval/Denial");
 				return false;
 			} else {
 				boolean confirmation = Driver.getConfirmation(
-						"Are you sure you wish to withdraw $%.2f from account %d?", amount, account_id);
+						"Corfirm to withdraw $%.2f from account %d?", amount, account_id);
 				if (confirmation) {
 					account.setBalance(account.getBalance() - amount);
 					update(account, true);
@@ -90,7 +90,7 @@ public class AccountServiceImpl implements AccountService {
 				}
 			}
 		} else {
-			Driver.printMessage("You do not have an account with the id of " + account_id);
+			Driver.printMessage("No account with the id of " + account_id);
 		}
 
 		return false;
@@ -103,18 +103,18 @@ public class AccountServiceImpl implements AccountService {
 		Float amount = Float.parseFloat(info[1]);
 
 		if (!CustomerServiceImpl.getInstance().getCustomer().getAccounts().containsKey(account_id)) {
-			Driver.printMessage("You are not authorized to deposit money into account %d.%n", account_id);
+			Driver.printMessage("You do not have permission to deposit into this Account %d.%n", account_id);
 			return false;
 		}
 
-		Account account = AccountRepository.getInstance().getById(account_id);
+		Account account = AccountDAO.getInstance().getById(account_id);
 		if (account != null) {
 			if (amount < 0) {
-				Driver.printMessage("You cannot deposit a negative amount.");
+				Driver.printMessage("Cannot deposit a negative amount.");
 				return false;
 			} else if (account.isPending()) {
 				Driver.printMessage(
-						"You cannot deposit money into a pending account. Please wait until an employee approves the account.");
+						"This account is waiting on employee Approval/Denial");
 				return false;
 			} else {
 				account.setBalance(account.getBalance() + amount);
@@ -126,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
 				return true;
 			}
 		} else {
-			Driver.printMessage("You do not have an account with the id of " + account_id);
+			Driver.printMessage("No account with the id of " + account_id);
 
 		}
 		return false;
@@ -140,36 +140,36 @@ public class AccountServiceImpl implements AccountService {
 		Float amount = Float.parseFloat(info[2]);
 
 		if (!CustomerServiceImpl.getInstance().getCustomer().getAccounts().containsKey(from_id)) {
-			Driver.printMessage("You are not authorized to transfer money out of account %d.%n", from_id);
+			Driver.printMessage("You do not have permission to transfer money out of account %d.%n", from_id);
 			return false;
 		} else if (!CustomerServiceImpl.getInstance().getCustomer().getAccounts().containsKey(to_id)) {
-			Driver.printMessage("You are not authorized to transfer money into account %d.%n", to_id);
+			Driver.printMessage("You do not have permisson to transfer money into account %d.%n", to_id);
 			return false;
 		}
 
 		Account from = CustomerServiceImpl.getInstance().getCustomer().getAccounts().get(from_id);
 		Account to = CustomerServiceImpl.getInstance().getCustomer().getAccounts().get(to_id);
 		if (from == null) {
-			Driver.printMessage("You do not have an account with the id of " + from_id);
+			Driver.printMessage("No account with the id of " + from_id);
 			return false;
 		} else if (to == null) {
-			Driver.printMessage("You do not have an account with the id of " + to_id);
+			Driver.printMessage("No account with the id of " + to_id);
 			return false;
 		} else {
 			if (amount < 0) {
-				Driver.printMessage("You cannot transfer a negative amount.");
+				Driver.printMessage("Cannot transfer a negative amount.");
 				return false;
 			} else if (amount > from.getBalance()) {
-				Driver.printMessage("You cannot transfer $%.2f from account %d because its balance is only $%.2f.",
+				Driver.printMessage("Cannot transfer $%.2f from account %d because its balance is only $%.2f.",
 						amount, from.getId(), from.getBalance());
 				return false;
 			} else if (from.isPending() || to.isPending()) {
 				Driver.printMessage(
-						"One of the accounts you are attempting to transfer with has not been approved. The transfer could not be completed. Please wait until an employee approves the account(s).");
+						"An account is still pending. Transaction is canceled. Account waiting for employee Approval/Denial");
 				return false;
 			} else {
 				boolean confirmation = Driver.getConfirmation(
-						"Are you sure you want to transfer $%.2f from account %d to account %d?", amount, from.getId(),
+						"Confirm to transfer $%.2f from account %d to account %d?", amount, from.getId(),
 						to.getId());
 
 				if (confirmation) {
@@ -192,22 +192,22 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public void apply(Scanner scanner) {
-		Driver.printMessage("How much money do you want in the account?: ", false);
+		Driver.printMessage("Enter inital deposit to make: ", false);
 		Float amount = scanner.nextFloat();
 		scanner.nextLine();
 		if (amount < 0) {
-			Driver.printMessage("You cannot create an account with a negative balance.");
+			Driver.printMessage("Cannot create an account with a negative balance.");
 			return;
 		}
 
 		Account a = new Account(amount);
 		a.setCustomerId(CustomerServiceImpl.getInstance().getCustomer().getId());
 		if (!CustomerServiceImpl.getInstance().getCustomer().isEmployee())
-			a.setPending(true);
-		AccountRepository.getInstance().add(a);
+			a.setPending(!CustomerServiceImpl.getInstance().getCustomer().isEmployee());
+		AccountDAO.getInstance().add(a);
 		CustomerServiceImpl.getInstance().getCustomer().addAccount(a);
 		Driver.printMessage(
-				"Your new account with balance $%.2f has been created and is pending approval. It must be approved before it can be used.%n",
+				"New account with balance $%.2f has made. Account waiting for emploee Approval/Denial.%n",
 				amount);
 	}
 
@@ -215,6 +215,6 @@ public class AccountServiceImpl implements AccountService {
 	public void update(Account account, boolean updateCurrentCustomer) {
 		if (updateCurrentCustomer)
 			CustomerServiceImpl.getInstance().getCustomer().addAccount(account);
-		AccountRepository.getInstance().update(account);
+		AccountDAO.getInstance().update(account);
 	}
 }

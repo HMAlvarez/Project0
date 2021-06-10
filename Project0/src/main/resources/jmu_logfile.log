@@ -14,3 +14,5 @@ INFO  | 2021-06-09 13:43:38 | [main] driver.Driver (Driver.java:152) - Customer 
 INFO  | 2021-06-09 13:43:51 | [main] driver.Driver (Driver.java:207) - Customer bob logged out.
 INFO  | 2021-06-09 13:44:22 | [main] driver.Driver (Driver.java:142) - Customer employee_dummy logged in.
 INFO  | 2021-06-09 13:44:29 | [main] driver.Driver (Driver.java:207) - Customer employee_dummy logged out.
+INFO  | 2021-06-09 14:06:36 | [main] driver.Driver (Driver.java:276) - Program Started.
+
